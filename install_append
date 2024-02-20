@@ -1,0 +1,1 @@
+install -Dm644 git-lfs.bash %{buildroot}/usr/share/bash-completion/completions/git-lfs

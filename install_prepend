@@ -1,0 +1,1 @@
+./bin/git-lfs completion bash > git-lfs.bash
