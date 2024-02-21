@@ -7,7 +7,7 @@
 #
 Name     : git-lfs
 Version  : 3.4.1
-Release  : 1
+Release  : 2
 URL      : https://github.com/git-lfs/git-lfs/releases/download/v3.4.1/git-lfs-v3.4.1.tar.gz
 Source0  : https://github.com/git-lfs/git-lfs/releases/download/v3.4.1/git-lfs-v3.4.1.tar.gz
 Source1  : http://localhost/cgit/projects/git-lfs-vendor/snapshot/git-lfs-vendor-3.4.1.tar.xz
@@ -17,6 +17,8 @@ License  : Apache-2.0 BSD-2-Clause BSD-3-Clause ISC MIT MPL-2.0-no-copyleft-exce
 Requires: git-lfs-bin = %{version}-%{release}
 Requires: git-lfs-data = %{version}-%{release}
 Requires: git-lfs-license = %{version}-%{release}
+Requires: git-lfs-man = %{version}-%{release}
+BuildRequires : asciidoctor
 BuildRequires : go
 # Suppress stripping binaries
 %define __strip /bin/true
@@ -52,6 +54,14 @@ Group: Default
 license components for the git-lfs package.
 
 
+%package man
+Summary: man components for the git-lfs package.
+Group: Default
+
+%description man
+man components for the git-lfs package.
+
+
 %prep
 %setup -q -n git-lfs-3.4.1
 cd %{_builddir}
@@ -63,12 +73,17 @@ cp -r %{_builddir}/git-lfs-vendor-3.4.1/* %{_builddir}/git-lfs-3.4.1/./
 %build
 ## build_prepend content
 unset CLEAR_DEBUG_TERSE
+make -f Makefile GIT_LFS_SHA=unused VERSION=unused PREFIX=unused man
+pushd docs
+go build -o ./bin/mangen man/mangen.go
+./bin/mangen
+popd
 ## build_prepend end
 export http_proxy=http://127.0.0.1:9/
 export https_proxy=http://127.0.0.1:9/
 export no_proxy=localhost,127.0.0.1,0.0.0.0
 export LANG=C.UTF-8
-export SOURCE_DATE_EPOCH=1708473090
+export SOURCE_DATE_EPOCH=1708476775
 export GCC_IGNORE_WERROR=1
 export AR=gcc-ar
 export RANLIB=gcc-ranlib
@@ -102,7 +117,7 @@ FFLAGS="$CLEAR_INTERMEDIATE_FFLAGS"
 FCFLAGS="$CLEAR_INTERMEDIATE_FCFLAGS"
 ASFLAGS="$CLEAR_INTERMEDIATE_ASFLAGS"
 LDFLAGS="$CLEAR_INTERMEDIATE_LDFLAGS"
-export SOURCE_DATE_EPOCH=1708473090
+export SOURCE_DATE_EPOCH=1708476775
 rm -rf %{buildroot}
 ## install_prepend content
 ./bin/git-lfs completion bash > git-lfs.bash
@@ -151,6 +166,12 @@ GOAMD64=v2
 install -Dm755 bin/git-lfs %{buildroot}/usr/bin/git-lfs
 ## install_append content
 install -Dm644 git-lfs.bash %{buildroot}/usr/share/bash-completion/completions/git-lfs
+pushd man
+for man in man*; do
+section=${man:3}
+mkdir -p %{buildroot}/usr/share/man/${man}
+install -D -p -m 0644 ${man}/*.${section} %{buildroot}/usr/share/man/${man}/
+done
 ## install_append end
 
 %files
@@ -194,3 +215,42 @@ install -Dm644 git-lfs.bash %{buildroot}/usr/share/bash-completion/completions/g
 /usr/share/package-licenses/git-lfs/ee18887653cb7c7576ca970aa4f6a68213ed8ab2
 /usr/share/package-licenses/git-lfs/f4c26c28c2455b6a57bc272711025451e88dcf7e
 /usr/share/package-licenses/git-lfs/fa7c4d75bae3a641d1f9ab5df028175bfb8a69ca
+
+%files man
+%defattr(0644,root,root,0755)
+/usr/share/man/man1/git-lfs-checkout.1
+/usr/share/man/man1/git-lfs-clean.1
+/usr/share/man/man1/git-lfs-clone.1
+/usr/share/man/man1/git-lfs-completion.1
+/usr/share/man/man1/git-lfs-dedup.1
+/usr/share/man/man1/git-lfs-env.1
+/usr/share/man/man1/git-lfs-ext.1
+/usr/share/man/man1/git-lfs-fetch.1
+/usr/share/man/man1/git-lfs-filter-process.1
+/usr/share/man/man1/git-lfs-fsck.1
+/usr/share/man/man1/git-lfs-install.1
+/usr/share/man/man1/git-lfs-lock.1
+/usr/share/man/man1/git-lfs-locks.1
+/usr/share/man/man1/git-lfs-logs.1
+/usr/share/man/man1/git-lfs-ls-files.1
+/usr/share/man/man1/git-lfs-merge-driver.1
+/usr/share/man/man1/git-lfs-migrate.1
+/usr/share/man/man1/git-lfs-pointer.1
+/usr/share/man/man1/git-lfs-post-checkout.1
+/usr/share/man/man1/git-lfs-post-commit.1
+/usr/share/man/man1/git-lfs-post-merge.1
+/usr/share/man/man1/git-lfs-pre-push.1
+/usr/share/man/man1/git-lfs-prune.1
+/usr/share/man/man1/git-lfs-pull.1
+/usr/share/man/man1/git-lfs-push.1
+/usr/share/man/man1/git-lfs-smudge.1
+/usr/share/man/man1/git-lfs-standalone-file.1
+/usr/share/man/man1/git-lfs-status.1
+/usr/share/man/man1/git-lfs-track.1
+/usr/share/man/man1/git-lfs-uninstall.1
+/usr/share/man/man1/git-lfs-unlock.1
+/usr/share/man/man1/git-lfs-untrack.1
+/usr/share/man/man1/git-lfs-update.1
+/usr/share/man/man1/git-lfs.1
+/usr/share/man/man5/git-lfs-config.5
+/usr/share/man/man7/git-lfs-faq.7

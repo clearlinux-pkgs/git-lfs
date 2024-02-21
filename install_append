@@ -1,1 +1,7 @@
 install -Dm644 git-lfs.bash %{buildroot}/usr/share/bash-completion/completions/git-lfs
+pushd man
+for man in man*; do
+	section=${man:3}
+	mkdir -p %{buildroot}/usr/share/man/${man}
+	install -D -p -m 0644 ${man}/*.${section} %{buildroot}/usr/share/man/${man}/
+done

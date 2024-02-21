@@ -1,1 +1,6 @@
 unset CLEAR_DEBUG_TERSE
+make -f Makefile GIT_LFS_SHA=unused VERSION=unused PREFIX=unused man
+pushd docs
+go build -o ./bin/mangen man/mangen.go
+./bin/mangen
+popd
