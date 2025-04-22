@@ -7,7 +7,7 @@
 #
 Name     : git-lfs
 Version  : 3.6.0
-Release  : 4
+Release  : 5
 URL      : https://github.com/git-lfs/git-lfs/releases/download/v3.6.0/git-lfs-v3.6.0.tar.gz
 Source0  : https://github.com/git-lfs/git-lfs/releases/download/v3.6.0/git-lfs-v3.6.0.tar.gz
 Source1  : http://localhost/cgit/projects/git-lfs-vendor/snapshot/git-lfs-vendor-3.6.0.tar.xz
